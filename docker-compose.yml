@@ -1,0 +1,82 @@
+version: "3.7"
+
+volumes:
+  simulador-dat:
+    name: "dat.tlaco.tec"
+    driver: local
+
+networks: 
+
+  simulador-net:
+    name: "net.tlaco.tec"
+    driver: bridge
+    ipam: 
+      driver: default
+
+services:
+
+  simulador-pql:
+    container_name: "pql.tlaco.tec"
+    image: oobravom/simulador-pql:1.0-SNAPSHOT
+    networks: 
+      simulador-net:
+    volumes:
+      - "simulador-dat:/simulador-pql"
+  
+  simulador-key:
+    container_name: "key.tlaco.tec"
+    image: oobravom/simulador-key:1.0-Final
+    networks: 
+      simulador-net:
+    ports:
+      - "8443:8443"
+    environment:
+      - KC_HOSTNAME=key.tlaco.tec
+      - KC_DB_URL=jdbc:postgresql://pql.tlaco.tec:5432/simulador
+    depends_on:
+      - simulador-pql
+      
+  simulador-mdb:
+    container_name: "mdb.tlaco.tec"
+    image: oobravom/simulador-mdb:1.0-SNAPSHOT
+    networks: 
+      simulador-net:
+    ports:
+      - "3309:3306"
+
+  simulador-api:
+    container_name: "api.tlaco.tec"
+    image: oobravom/simulador-api:1.0-Final
+    networks: 
+      simulador-net:
+    ports:
+      - "6060:80"
+      - "6061:443"
+    depends_on:
+      - simulador-key
+      - simulador-mdb
+    environment:
+      - default.http.port=80
+      - default.https.port=443
+      - simulador.mdb.password=iz0819
+      - simulador.mdb.port.number=3306
+      - simulador.mdb.user=simulador-api
+      - simulador.mdb.data.base=simulador
+      - simulador.mdb.server.name=mdb.tlaco.tec
+      - simulador.key.realms.url=https://key.tlaco.tec:8443/realms
+      
+  simulador-web:
+    container_name: "web.tlaco.tec"
+    image: oobravom/simulador-web:1.0-Final
+    networks: 
+      simulador-net:
+    ports:
+      - "9090:80"
+      - "9091:443"
+    depends_on:
+      - simulador-api
+    environment:
+      - default.http.port=80
+      - default.https.port=443
+      - simulador.key.auth.url=https://key.tlaco.tec:8443
+      - simulador.api.rest.url=http://api.tlaco.tec/simulador/rest

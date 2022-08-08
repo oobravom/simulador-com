@@ -1,0 +1,18 @@
+version: "3.7"
+
+networks: 
+  simulador-net:
+    name: "net.tlaco.tec"
+    driver: bridge
+
+services:
+  simulador-key:
+    container_name: "simulador-key"
+    image: oobravom/simulador-key:1.0-Final
+    networks: 
+      simulador-net:
+    ports:
+      - "8443:8443"
+    environment:
+      - KC_DB_URL=jdbc:postgresql://pql.tlaco.tec:5432/simulador
+
