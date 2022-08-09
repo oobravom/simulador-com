@@ -64,6 +64,8 @@ services:
       - simulador.mdb.data.base=simulador
       - simulador.mdb.server.name=mdb.tlaco.tec
       - simulador.key.realms.url=https://key.tlaco.tec:8443/realms
+    labels:
+      - traefik.http.routers.simulador-api.rule=Host(`api.tlaco.tec`)
       
   simulador-web:
     container_name: "web.tlaco.tec"
@@ -80,6 +82,8 @@ services:
       - default.https.port=443
       - simulador.key.auth.url=https://key.tlaco.tec:8443
       - simulador.api.rest.url=http://api.tlaco.tec/simulador/rest
+    labels:
+      - traefik.http.routers.simulador-web.rule=Host(`web.tlaco.tec`)
       
   simulador-tek:
     image: traefik:v2.8.1
