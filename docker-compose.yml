@@ -80,3 +80,15 @@ services:
       - default.https.port=443
       - simulador.key.auth.url=https://key.tlaco.tec:8443
       - simulador.api.rest.url=http://api.tlaco.tec/simulador/rest
+      
+  simulador-tek:
+    image: traefik:v2.8.1
+    container_name: "tek.tlaco.tec"
+    networks: 
+      simulador-net:
+    ports:
+      - "80:80"
+    volumes:
+      - ./acme.json:/acme.json
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
