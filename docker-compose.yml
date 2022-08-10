@@ -92,8 +92,13 @@ services:
       simulador-net:
     ports:
       - "80:80"
-      - "8080:8080"
     volumes:
       - ./acme.json:/acme.json
+      - ./simulador-tek-usr:/simulador-tek-usr
       - ./traefik.yml:/etc/traefik/traefik.yml
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - traefik.http.routers.api.middlewares=auth
+      - traefik.http.routers.api.service=api@internal
+      - traefik.http.routers.api.rule=Host(`tek.tlaco.tec`)
+      - traefik.http.middlewares.auth.basicauth.usersfile=/simulador-tek-usr
