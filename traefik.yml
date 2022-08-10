@@ -1,3 +1,6 @@
+api:
+  insecure: true
+
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
