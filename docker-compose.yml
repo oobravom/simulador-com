@@ -65,7 +65,11 @@ services:
       - simulador.mdb.server.name=mdb.tlaco.tec
       - simulador.key.realms.url=https://key.tlaco.tec:8443/realms
     labels:
+      - traefik.enable=true
+      - traefik.http.routers.simulador-api.tls=true
+      - traefik.http.routers.simulador-api.entrypoints=web,websecure
       - traefik.http.routers.simulador-api.rule=Host(`api.tlaco.tec`)
+      - traefik.http.routers.simulador-api.tls.certresolver=simulador-tek-rlr
       
   simulador-web:
     container_name: "web.tlaco.tec"
@@ -83,7 +87,11 @@ services:
       - simulador.key.auth.url=https://key.tlaco.tec:8443
       - simulador.api.rest.url=http://api.tlaco.tec/simulador/rest
     labels:
+      - traefik.enable=true
+      - traefik.http.routers.simulador-web.tls=true
+      - traefik.http.routers.simulador-web.entrypoints=web,websecure
       - traefik.http.routers.simulador-web.rule=Host(`web.tlaco.tec`)
+      - traefik.http.routers.simulador-web.tls.certresolver=simulador-tek-rlr
       
   simulador-tek:
     image: traefik:v2.8.1
@@ -92,13 +100,19 @@ services:
       simulador-net:
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./acme.json:/acme.json
+      - ./traefik.log:/traefik.log
       - ./simulador-tek-usr:/simulador-tek-usr
       - ./traefik.yml:/etc/traefik/traefik.yml
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - traefik.http.routers.api.middlewares=auth
       - traefik.http.routers.api.service=api@internal
+      - traefik.http.routers.dashboard.middlewares=auth
       - traefik.http.routers.api.rule=Host(`tek.tlaco.tec`)
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.rule=Host(`tek.tlaco.tec`)
       - traefik.http.middlewares.auth.basicauth.usersfile=/simulador-tek-usr
+      - traefik.http.routers.simulador-tek.tls.certresolver=simulador-tek-rlr
