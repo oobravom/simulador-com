@@ -50,6 +50,7 @@ Se procede a descargar o clonar para ser más específico el reposotirio desde g
 ```bash
   user@host:~$ cd $DIRECTORIO_DE_TRABAJO
   user@host:~$ mkdir simulador-com
+  user@host:~$ cd simulador-com
   user@host:~$ git clone https://github.com/oobravom/simulador-com.git
   user@host:~$ 
 ```
